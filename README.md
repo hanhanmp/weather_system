@@ -9,7 +9,7 @@
 
     功能: 定义网页的结构和内容。
     主要任务:
-        创建地图的容器（如 <div id="map"></div>），用于显示 Leaflet 地图。
+        创建地图的容器（如<!--<div id="map"></div>-->），用于显示 Leaflet 地图。
         包含其他必要的 HTML 元素，例如按钮、下拉菜单或图例，用于用户交互。
         引入 CSS 和 JS 文件，确保样式和功能正常加载。
 
@@ -385,13 +385,11 @@
 1. 变量声明
 
     let: 用于声明一个块级作用域的变量，可以被赋值和重新赋值。
-    javascript
 
-let x = 10; // 声明变量 x，并赋值为 10
-x = 20; // 重新赋值
+    let x = 10; // 声明变量 x，并赋值为 10
+    x = 20; // 重新赋值
 
 const: 用于声明一个常量，常量的值不能被重新赋值。
-javascript
 
     const PI = 3.14; // 声明常量 PI，赋值为 3.14
 
@@ -402,35 +400,30 @@ JavaScript 有几种基本数据类型：
     Number: 数字类型（整数和浮点数）。
 
     String: 字符串，用单引号或双引号括起来。
-    javascript
 
-let name = "Alice"; // 字符串
+    let name = "Alice"; // 字符串
 
-Boolean: 布尔值，只有 true 和 false 两个值。
+    Boolean: 布尔值，只有 true 和 false 两个值。
 
-Object: 对象类型，可以存储多个值和更复杂的实体。
-javascript
+    Object: 对象类型，可以存储多个值和更复杂的实体。
 
     let person = { name: "Alice", age: 25 }; // 对象
 
 3. 函数定义
 
     函数声明:
-    javascript
 
-function sayHello() {
-    console.log("Hello!");
-}
+    function sayHello() {
+        console.log("Hello!");
+    }
 
 函数表达式:
-javascript
 
-const sayHello = function() {
-    console.log("Hello!");
-};
+    const sayHello = function() {
+        console.log("Hello!");
+    };
 
 箭头函数: ES6 提供的简洁语法。
-javascript
 
     const sayHello = () => {
         console.log("Hello!");
@@ -439,16 +432,14 @@ javascript
 4. 控制结构
 
     条件语句: 使用 if, else if, 和 else。
-    javascript
 
-if (x > 10) {
-    console.log("x is greater than 10");
-} else {
-    console.log("x is 10 or less");
-}
+    if (x > 10) {
+        console.log("x is greater than 10");
+    } else {
+        console.log("x is 10 or less");
+    }
 
-循环: 常用的循环结构有 for 和 while。
-javascript
+    循环: 常用的循环结构有 for 和 while。  
 
     for (let i = 0; i < 5; i++) {
         console.log(i); // 输出 0 到 4
@@ -457,7 +448,6 @@ javascript
 5. 数组
 
     数组是一种用于存储多个值的对象。
-    javascript
 
     let fruits = ["apple", "banana", "cherry"]; // 数组
     console.log(fruits[0]); // 输出 "apple"
@@ -465,8 +455,6 @@ javascript
 6. 对象
 
     对象是键值对的集合。
-    javascript
-
     let car = {
         brand: "Toyota",
         model: "Camry",
@@ -477,7 +465,6 @@ javascript
 7. 事件处理
 
     使用 addEventListener 方法为元素绑定事件。
-    javascript
 
     document.getElementById("myButton").addEventListener("click", function() {
         alert("Button clicked!");
@@ -486,7 +473,6 @@ javascript
 8. Promise
 
     Promise 用于处理异步操作，允许你在操作完成后执行某个回调。
-    javascript
 
     let promise = new Promise((resolve, reject) => {
         // 异步操作
@@ -506,7 +492,6 @@ javascript
 9. 模块
 
     ES6 引入了模块化，可以使用 import 和 export 语句。
-    javascript
 
     // 在 module.js 中
     export function greet() {
@@ -520,7 +505,6 @@ javascript
 10. DOM 操作
 
     使用 document 对象来操作 HTML 元素。
-    javascript
 
     let element = document.getElementById('myElement'); // 获取元素
     element.style.color = "blue"; // 设置样式
