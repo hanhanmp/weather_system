@@ -1,74 +1,116 @@
-// 初始化地图
+// Initialize the map
 let map = L.map('map', {
-    renderer: L.canvas(), // 使用Canvas渲染器来提高绘制性能
+    renderer: L.canvas(), // Use Canvas renderer for better performance
     preferCanvas: true
 }).setView([28.3, 120.5], 8);
 
-// 添加 OpenStreetMap 瓦片层
+// Add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
 }).addTo(map);
 
-let geojsonLayer;
+let townGeojsonLayer;
+let countyGeojsonLayer;
 
-
-// Add manual latitude and longitude grid lines
+// Add manual latitude and longitude grid lines with labels
 function addGraticule() {
     const latLines = [];
     const lngLines = [];
 
     for (let lat = 27; lat <= 29; lat += 0.5) {
-        latLines.push(L.polyline([[lat, 119], [lat, 122]], { color: '#888', weight: 0.5, opacity: 0.8 }));
+        latLines.push(L.polyline([[lat, 119], [lat, 122]], { color: '#888', weight: 0.5, opacity: 0.8 }).addTo(map));
+        // Add latitude labels
+        L.marker([lat, 119], {
+            icon: L.divIcon({
+                className: 'lat-label',
+                html: `<div style="transform: translate(-50%, -100%); font-size: 10px; color: #555;">${lat}° N</div>`
+            })
+        }).addTo(map);
     }
 
     for (let lng = 119; lng <= 122; lng += 0.5) {
-        lngLines.push(L.polyline([[27, lng], [29, lng]], { color: '#888', weight: 0.5, opacity: 0.8 }));
+        lngLines.push(L.polyline([[27, lng], [29, lng]], { color: '#888', weight: 0.5, opacity: 0.8 }).addTo(map));
+        // Add longitude labels
+        L.marker([27, lng], {
+            icon: L.divIcon({
+                className: 'lng-label',
+                html: `<div style="transform: translate(-50%, 0); font-size: 10px; color: #555;">${lng}° E</div>`
+            })
+        }).addTo(map);
     }
-
-    latLines.forEach(line => line.addTo(map));
-    lngLines.forEach(line => line.addTo(map));
 }
 
-addGraticule(); // Call the function to add grid lines
+addGraticule(); // Call the function to add grid lines and labels
 
-// 加载 shapefile
-// Load shapefile
+// Load town-level shapefile and style boundaries
 shp('xiangzhen.zip').then(function(geojson) {
-    geojsonLayer = L.geoJSON(geojson, {
+    townGeojsonLayer = L.geoJSON(geojson, {
+        style: function (feature) {
+            return {color: '#D3D3D3', weight: 0.6, opacity: 0.4}; // Lighter and thinner for town
+        },
         onEachFeature: function (feature, layer) {
             layer.on({
                 click: onFeatureClick
             });
-        },
-        style: function (feature) {
-            // Different styles based on the feature level
-            if (feature.properties.level === 'county') {
-                return {color: '#333333', weight: 2}; // Darker and thicker for county
-            } else if (feature.properties.level === 'town') {
-                return {color: '#999999', weight: 0.5}; // Lighter and thinner for town
-            }
-            return {color: '#777777', weight: 1}; // Default style
         }
     }).addTo(map);
 });
 
+// Load county-level shapefile and style boundaries
+shp('shp.zip').then(function(geojson) {
+    countyGeojsonLayer = L.geoJSON(geojson, {
+        style: function (feature) {
+            return {color: '#696969', weight: 1, opacity: 1}; // Softer and lighter for county boundaries
+        }
+    }).addTo(map);
+});
 
-// 处理点击事件
+// Function for feature click event to set the risk level
 function onFeatureClick(e) {
     const layer = e.target;
-
-    // 重置图层样式，确保不受之前样式影响
     layer.setStyle({
-        fillColor: getColor(document.getElementById('risk-level').value), // 直接设置目标颜色
-        fillOpacity: 0.8, // 确保透明度一致
+        fillColor: getColor(document.getElementById('risk-level').value),
+        fillOpacity: 0.8,
         color: '#777777',
         weight: 1
     });
 }
 
-// 在框选功能中也确保不重复叠加样式
+// Add legend for risk levels
+function addLegend() {
+    const legend = L.control({position: 'bottomleft'});
+    legend.onAdd = function () {
+        const div = L.DomUtil.create('div', 'info legend');
+        div.innerHTML = `<h4>风险等级</h4>
+                         <i style="background: #FF4500; width: 12px; height: 12px; display: inline-block;"></i> 极高<br>
+                         <i style="background: #FFA500; width: 12px; height: 12px; display: inline-block;"></i> 高<br>
+                         <i style="background: #FFD700; width: 12px; height: 12px; display: inline-block;"></i> 中<br>
+                         <i style="background: #9ACD32; width: 12px; height: 12px; display: inline-block;"></i> 低<br>
+                         <i style="background: #87CEEB; width: 12px; height: 12px; display: inline-block;"></i> 无风险<br>`;
+        return div;
+    };
+    legend.addTo(map);
+}
+
+// Add legend to the map
+addLegend();
+
+function saveMap() {
+    // Use html2canvas to save the map as an image with higher resolution
+    html2canvas(document.getElementById('map'), { scale: 2 }).then(canvas => {
+        // Create a temporary download link
+        let link = document.createElement('a');
+        link.href = canvas.toDataURL();
+        link.download = 'map.png'; // File name as map.png
+        link.click(); // Trigger the download
+    }).catch(error => {
+        console.error('Error saving the map:', error);
+    });
+}
+
+// Start box select function
 function startBoxSelect() {
-    map.dragging.disable(); // 禁用地图拖动
+    map.dragging.disable(); // Disable map dragging
     let boxLayer;
 
     map.on('mousedown', function(e) {
@@ -91,30 +133,29 @@ function startBoxSelect() {
             map.dragging.enable();
 
             let bounds = boxLayer.getBounds();
-            geojsonLayer.eachLayer(function(layer) {
+            townGeojsonLayer.eachLayer(function(layer) {
                 if (bounds.intersects(layer.getBounds())) {
-                    // 直接设置颜色，避免重复叠加
                     layer.setStyle({
                         fillColor: getColor(document.getElementById('risk-level').value),
-                        fillOpacity: 0.8, // 统一透明度
+                        fillOpacity: 0.8,
                         color: '#777777',
                         weight: 1
                     });
                 }
             });
 
-            // 清除选择框
+            // Remove selection box
             map.removeLayer(boxLayer);
         }
     });
 
-    // 结束框选模式
+    // End box select mode
     map.on('mouseup', function() {
         map.dragging.enable();
     });
 }
 
-// 获取颜色函数
+// Function to get color based on risk level
 function getColor(risk) {
     switch (risk) {
         case '极高': return '#FF4500'; 
@@ -124,39 +165,4 @@ function getColor(risk) {
         case '无风险': return '#87CEEB';
         default: return '#FFFFFF'; // White
     }
-}
-
-
-// 添加风险等级标签
-function addLegend() {
-    const legend = L.control({position: 'bottomleft'}); // 设置在左下角
-
-    legend.onAdd = function () {
-        const div = L.DomUtil.create('div', 'info legend');
-        div.innerHTML = `<h4>风险等级</h4>
-                         <i style="background: #FF4500; width: 12px; height: 12px; display: inline-block;"></i> 极高<br>
-                         <i style="background: #FFA500; width: 12px; height: 12px; display: inline-block;"></i> 高<br>
-                         <i style="background: #FFD700; width: 12px; height: 12px; display: inline-block;"></i> 中<br>
-                         <i style="background: #9ACD32; width: 12px; height: 12px; display: inline-block;"></i> 低<br>
-                         <i style="background: #87CEEB; width: 12px; height: 12px; display: inline-block;"></i> 无风险<br>`;
-        return div;
-    };
-
-    legend.addTo(map);
-}
-
-// 添加图例到地图
-addLegend();
-
-function saveMap() {
-    // 使用 html2canvas 将地图保存为图片
-    html2canvas(document.getElementById('map')).then(canvas => {
-        // 创建一个临时的下载链接
-        let link = document.createElement('a');
-        link.href = canvas.toDataURL();
-        link.download = 'map.png'; // 文件名为 map.png
-        link.click(); // 触发下载
-    }).catch(error => {
-        console.error('Error saving the map:', error);
-    });
 }
