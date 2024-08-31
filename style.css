@@ -1,0 +1,30 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: white; /* 全局背景色设置为白色 */
+}
+
+#map {
+    background-color: white; /* 确保地图背景为白色 */
+}
+
+#controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border: 1px solid #ddd;
+    z-index: 1000;
+}
+
+h3 {
+    margin-top: 0;
+}
+
+select, button {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+}

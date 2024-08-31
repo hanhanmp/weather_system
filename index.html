@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Level Map Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <div id="controls" class="top-right">
+        <h3>Risk Level Editor</h3>
+        <select id="risk-level">
+            <option value="无风险">无风险</option>
+            <option value="低">低</option>
+            <option value="中">中</option>
+            <option value="高">高</option>
+            <option value="极高">极高</option>
+        </select>
+        <button onclick="startBoxSelect()">Start Box Select</button>
+        <button onclick="saveMap()">Save Map</button>
+    </div>
+    <div id="map" style="width: 800px; height: 800px; margin: auto; border: 1px solid black;"></div> <!-- 设置固定大小 -->
+    
+    <!-- Load Leaflet first -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
+    <!-- Then load the plugins -->
+   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
+    
+    <!-- Load your main script last -->
+    <script src="script.js"></script>
+</body>
+</html>
