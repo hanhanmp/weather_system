@@ -455,6 +455,7 @@ JavaScript 有几种基本数据类型：
 6. 对象
 
 对象是键值对的集合。
+
     let car = {
         brand: "Toyota",
         model: "Camry",
